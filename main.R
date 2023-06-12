@@ -1,8 +1,6 @@
 accidents <- read.csv('stat_acc_V3.csv', sep = ";", header = TRUE)
 
 
-print(accidents$ville)
-
 #traitements données id_code_insee
 id_code_insee = accidents$id_code_insee
 #transforme les données char en int
@@ -32,9 +30,9 @@ annee_naissance = as.integer(annee_naissance)
 print(annee_naissance)
 
 
+
 accidents$descr_cat_veh <- as.numeric(factor(accidents$descr_cat_veh))
 print(accidents$descr_cat_veh[1:20])
-
 
 
 # Remplacer les valeurs NULL par NA
