@@ -1,7 +1,10 @@
 
 accidents <- read.csv('stat_acc_V3.csv', sep = ";", header = TRUE)
 accidents$descr_cat_veh <- as.numeric(factor(accidents$descr_cat_veh))
+accidents$ville <- as.numeric(factor(accidents$ville))
 print(accidents$descr_cat_veh[1:20])
+
+
 
 
 
