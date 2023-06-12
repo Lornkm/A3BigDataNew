@@ -1,5 +1,9 @@
 
-accidents <- read.csv("stat_acc_V3.csv",sep = ";", header = TRUE)
+accidents <- read.csv('stat_acc_V3.csv', sep = ";", header = TRUE)
+accidents$descr_cat_veh <- as.numeric(factor(accidents$descr_cat_veh))
+print(accidents$descr_cat_veh[1:20])
+
+
 
 # Remplacer les valeurs NULL par NA
 accidents[is.null(accidents)] <- NA
@@ -7,5 +11,4 @@ accidents[is.null(accidents)] <- NA
 # Identifier les observations contenant des valeurs manquantes
 na_rows <- complete.cases(accidents)
 
-# Supprimer les observations contenant des valeurs manquantes
-accidents_clean <- accidents[na_rows, ]
+print("lrkn << ndtr")
