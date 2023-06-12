@@ -12,18 +12,22 @@ print(accidents$id_code_insee)
 
 
 #traitements données age
-#même méthode pour l'age
 accidents$age = as.integer(accidents$age)
 accidents$age[is.na(accidents$age)] <- as.integer(mean(accidents$age, na.rm = TRUE))
 accidents$age = as.integer(accidents$age)
 print(age)
 
 #traitements données an_nais
-#même méthode pour l'année
 accidents$an_nais = as.integer(accidents$an_nais)
-accidents$an_nais[is.na(annee_naissance)] <- as.integer(mean(accidents$an_nais, na.rm = TRUE))
+accidents$an_nais[is.na(accidents$an_nais)] <- as.integer(mean(accidents$an_nais, na.rm = TRUE))
 accidents$an_nais = as.integer(accidents$an_nais)
 print(accidents$an_nais)
+
+#traitements données place
+accidents$place = as.integer(accidents$place)
+accidents$place[is.na(accidents$place)] <- as.integer(mean(accidents$place, na.rm = TRUE))
+accidents$place = as.integer(accidents$place)
+print(accidents$place)
 
 
 
@@ -46,3 +50,5 @@ for (i in seq_along(col_means)) {
   col_name <- names(col_means)[i]
   accidents_imputés[is.na(accidents_imputés[, col_name]), col_name] <- col_means[i]
 }
+
+print(accidents$place)
