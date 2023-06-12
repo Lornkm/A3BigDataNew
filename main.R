@@ -30,9 +30,18 @@ accidents$place = as.integer(accidents$place)
 print(accidents$an_nais)
 
 
-
+#variables multimodales en nombres
 accidents$descr_cat_veh <- as.numeric(factor(accidents$descr_cat_veh))
-print(accidents$descr_cat_veh[1:20])
+accidents$ville <- as.numeric(factor(accidents$ville))
+accidents$descr_agglo <- as.numeric(factor(accidents$descr_agglo))
+accidents$descr_athmo <- as.numeric(factor(accidents$descr_athmo))
+accidents$descr_lum <- as.numeric(factor(accidents$descr_lum))
+accidents$descr_etat_surf <- as.numeric(factor(accidents$descr_etat_surf))
+accidents$description_intersection <- as.numeric(factor(accidents$description_intersection))
+accidents$descr_dispo_secu <- as.numeric(factor(accidents$descr_dispo_secu))
+accidents$descr_grav <- as.numeric(factor(accidents$descr_grav))
+accidents$descr_motif_traj <- as.numeric(factor(accidents$descr_motif_traj))
+accidents$descr_type_col <- as.numeric(factor(accidents$descr_type_col))
 
 
 # Remplacer les valeurs NULL par NA
