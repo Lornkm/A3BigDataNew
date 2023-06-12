@@ -1,5 +1,6 @@
 
-accidents = read.csv('C:\Users\loria\Documents\Cours\Big Data\A3BigDataNew\stat_acc_V3.csv')
+accidents <- read.csv("stat_acc_V3.csv", sep = "\t", header = TRUE)
+
 
 
 # Créer un vecteur de nombres
