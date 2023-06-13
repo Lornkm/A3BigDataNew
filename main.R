@@ -35,10 +35,12 @@ accidents$place = as.integer(accidents$place)
 #variables multimodales en nombres
 print(unique(accidents$descr_grav))
 # Obtenir les niveaux uniques de la variable
-levels <- unique(accidents$descr_grav)  # Obtient les niveaux uniques de la variable
+levels <- unique(accidents$descr_grav) 
 for (i in 1:length(levels)) {
   accidents$descr_grav[accidents$descr_grav == levels[i]] <- i
 }
+accidents$descr_grav <- as.numeric(accidents$descr_grav)
+
 print(unique(accidents$descr_grav))
 # Obtenir les niveaux uniques de la variable
 levels <- unique(accidents$descr_cat_veh)
@@ -46,6 +48,8 @@ print(unique(accidents$descr_cat_veh))
 for (i in 1:length(levels)) {
   accidents$descr_cat_veh[accidents$descr_cat_veh == levels[i]] <- i
 }
+accidents$descr_cat_veh <- as.numeric(accidents$descr_cat_veh)
+
 print(unique(accidents$descr_cat_veh))
 
 
@@ -192,11 +196,5 @@ top_100_cities <- head(city_accidents, 100)
 barplot(top_100_cities$count, names.arg = top_100_cities$city,
         xlab = "Code postal", ylab = "Nombre d'accidents",
         main = "Nombre d'accidents par ville", las = 2, cex.names = 0.8)
-
-
-
-
-
-
 
 
