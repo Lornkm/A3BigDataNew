@@ -65,3 +65,8 @@ for (i in seq_along(col_means)) {
 
 #print(accidents$place)
 
+
+# Mettre le bon âge
+print(accidents$age[1:20])
+accidents$age <- accidents$age - 14
+print(accidents$age[1:20])
