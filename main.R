@@ -31,17 +31,19 @@ print(accidents$an_nais)
 
 
 #variables multimodales en nombres
-accidents$descr_cat_veh <- as.numeric(factor(accidents$descr_cat_veh))
-accidents$ville <- as.numeric(factor(accidents$ville))
-accidents$descr_agglo <- as.numeric(factor(accidents$descr_agglo))
-accidents$descr_athmo <- as.numeric(factor(accidents$descr_athmo))
-accidents$descr_lum <- as.numeric(factor(accidents$descr_lum))
-accidents$descr_etat_surf <- as.numeric(factor(accidents$descr_etat_surf))
-accidents$description_intersection <- as.numeric(factor(accidents$description_intersection))
-accidents$descr_dispo_secu <- as.numeric(factor(accidents$descr_dispo_secu))
-accidents$descr_grav <- as.numeric(factor(accidents$descr_grav))
-accidents$descr_motif_traj <- as.numeric(factor(accidents$descr_motif_traj))
-accidents$descr_type_col <- as.numeric(factor(accidents$descr_type_col))
+print(unique(accidents$descr_grav))
+levels <- unique(accidents$descr_grav)  # Obtient les niveaux uniques de la variable
+for (i in 1:length(levels)) {
+  accidents$descr_grav[accidents$descr_grav == levels[i]] <- i
+}
+print(unique(accidents$descr_grav))
+
+levels <- unique(accidents$descr_cat_veh)  # Obtient les niveaux uniques de la variable
+print(unique(accidents$descr_cat_veh))
+for (i in 1:length(levels)) {
+  accidents$descr_cat_veh[accidents$descr_cat_veh == levels[i]] <- i
+}
+print(unique(accidents$descr_cat_veh))
 
 
 # Remplacer les valeurs NULL par NA
@@ -60,4 +62,4 @@ for (i in seq_along(col_means)) {
   accidents_imputés[is.na(accidents_imputés[, col_name]), col_name] <- col_means[i]
 }
 
-print(accidents$place)
+#print(accidents$place)
