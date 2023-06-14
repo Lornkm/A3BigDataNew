@@ -185,40 +185,101 @@ barplot(monthly_accidents$count, names.arg = c("Janvier", "Février", "Mars", "A
 
 
 
-# Load the necessary libraries
-library(maps)
 
+# Installer et charger les packages nécessaires
+library(leaflet)
+library(dplyr)
+
+# Extraire le code du département de la colonne id_code_insee
 accidents$department <- substr(accidents$id_code_insee, 1, nchar(accidents$id_code_insee) - 3)
 
-
-# Extract the department code from the id_code_insee column
-accidents$department <- sapply(accidents$id_code_insee, extract_department)
-
-# Read in the department mapping file
+# Lire le fichier de mappage des départements
 department_map <- read.csv("link_region_dep.csv", stringsAsFactors = FALSE)
 
-# Create a named vector to map department codes to names
+# Créer un vecteur nommé pour mapper les codes des départements aux noms
 department_map <- setNames(department_map$nom_departement, department_map$code_departement)
 
-# Update the department column with the department names
+# Mettre à jour la colonne department avec les noms des départements
 accidents$department <- department_map[accidents$department]
 
-# Count the number of accidents by department
-accidents_by_department <- aggregate(list(accidents = accidents$date), by = list(department = accidents$department), length)
+# Compter le nombre d'accidents par département
+accidents_by_department <- accidents %>%
+  group_by(department) %>%
+  summarise(nombre_accidents = n())
 
-# Create a map of France
-france_map <- map("france", fill = TRUE, col = "transparent", plot = FALSE)
+# Créer une palette de couleurs personnalisée pour le nombre d'accidents
+colors <- c("orange", "red", "green", "blue", "purple", "black")
 
-# Match the departments in the data with those in the map
-match_index <- match(accidents_by_department$department, france_map$names)
+# Assigner des couleurs à chaque département en fonction du nombre d'accidents
+department_colors <- cut(accidents_by_department$nombre_accidents,
+                         breaks = c(-Inf, 500, 1000, 1500, 2000, 2500, Inf),
+                         labels = colors)
 
-# Create a color palette for the number of accidents with more visible reds
-colors <- colorRampPalette(c("lightblue", "blue"))(length(unique(accidents_by_department$accidents)))
+# Créer une carte en utilisant leaflet
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = france_map,
+              fillColor = department_colors,
+              fillOpacity = 0.7,
+              color = "white",
+              weight = 1) %>%
+  addLegend(position = "bottomright",
+            title = "Nombre d'accidents",
+            colors = colors,
+            labels = c("<500", "500-1000", "1000-1500", "1500-2000", "2000-2500", ">2500"))
 
-# Assign colors to each department based on the number of accidents
-department_colors <- colors[as.numeric(cut(accidents_by_department$accidents, breaks = length(colors)))]
 
-# Plot the map with colored departments
-map(france_map, fill = TRUE, col = department_colors[match_index])
 
+
+
+
+
+
+
+
+
+
+
+library(leaflet)
+library(dplyr)
+# Extraire le code du département de la colonne id_code_insee
+accidents$department <- substr(accidents$id_code_insee, 1, nchar(accidents$id_code_insee) - 3)
+
+# Lire le fichier de mappage des régions
+region_map <- read.csv("link_region_dep.csv", stringsAsFactors = FALSE)
+
+# Créer un vecteur nommé pour mapper les codes des départements aux noms des régions
+region_map <- setNames(region_map$nom_region, region_map$code_departement)
+
+# Mettre à jour la colonne department avec les noms des régions
+accidents$region <- region_map[accidents$department]
+
+# Compter le nombre d'accidents par région
+accidents_by_region <- accidents %>%
+  group_by(region) %>%
+  summarise(nombre_accidents = n())
+
+# Créer une palette de couleurs personnalisée pour le nombre d'accidents
+colors <- c("orange", "red", "green", "blue", "purple", "black")
+
+# Assigner des couleurs à chaque région en fonction du nombre d'accidents
+region_colors <- cut(accidents_by_region$nombre_accidents,
+                     breaks = c(-Inf, 500, 1000, 1500, 2000, 2500, Inf),
+                     labels = colors)
+
+# Créer une carte en utilisant leaflet
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = france_map,
+              fillColor = region_colors,
+              fillOpacity = 0.7,
+              color = "white",
+              weight = 1) %>%
+  addLegend(position = "bottomright",
+            title = "Nombre d'accidents",
+            colors = colors,
+            labels = c("<500", "500-1000", "1000-1500", "1500-2000", "2000-2500", ">2500"))
+
+
+print(accidents_by_region)
 
