@@ -188,20 +188,8 @@ barplot(monthly_accidents$count, names.arg = c("Janvier", "Février", "Mars", "A
 # Load the necessary libraries
 library(maps)
 
-# Create a function to extract the department code from the id_code_insee column
-extract_department <- function(x) {
-  # Convert the id_code_insee value to a character string
-  x <- as.character(x)
-  
-  # Check if the department code is "2A" or "2B"
-  if (substr(x, 1, 2) %in% c("2A", "2B")) {
-    # Return the department code
-    return(substr(x, 1, 2))
-  } else {
-    # Return all but the last three characters of the id_code_insee value
-    return(substr(x, 1, nchar(x) - 3))
-  }
-}
+accidents$department <- substr(accidents$id_code_insee, 1, nchar(accidents$id_code_insee) - 3)
+
 
 # Extract the department code from the id_code_insee column
 accidents$department <- sapply(accidents$id_code_insee, extract_department)
