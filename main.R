@@ -1,14 +1,8 @@
 accidents <- read.csv('stat_acc_V3.csv', sep = ";", header = TRUE)
 
-<<<<<<< HEAD
 
 accidents$date <- as.POSIXct(accidents$date, format = "%Y-%m-%d %H:%M")
 
-=======
-accidents$date <- as.POSIXct(accidents$date, format = "%Y-%m-%d %H:%M")
-
-#transforme les données char en int
->>>>>>> 399d66b7f2335f19e396c403a66ea22cf285b2a9
 
 #traitements données id_code_insee
 accidents$id_code_insee = as.integer(accidents$id_code_insee)
@@ -41,12 +35,10 @@ accidents$place = as.integer(accidents$place)
 #variables multimodales en nombres
 print(unique(accidents$descr_grav))
 # Obtenir les niveaux uniques de la variable
-levels <- unique(accidents$descr_grav) 
+levels <- unique(accidents$descr_grav)  # Obtient les niveaux uniques de la variable
 for (i in 1:length(levels)) {
   accidents$descr_grav[accidents$descr_grav == levels[i]] <- i
 }
-accidents$descr_grav <- as.numeric(accidents$descr_grav)
-
 print(unique(accidents$descr_grav))
 # Obtenir les niveaux uniques de la variable
 levels <- unique(accidents$descr_cat_veh)
@@ -54,8 +46,6 @@ print(unique(accidents$descr_cat_veh))
 for (i in 1:length(levels)) {
   accidents$descr_cat_veh[accidents$descr_cat_veh == levels[i]] <- i
 }
-accidents$descr_cat_veh <- as.numeric(accidents$descr_cat_veh)
-
 print(unique(accidents$descr_cat_veh))
 
 
@@ -83,7 +73,6 @@ accidents$age <- accidents$age - 14
 print(accidents$age[1:20])
 
 
-<<<<<<< HEAD
 # Create a new column for month and week
 accidents$month <- format(accidents$date, "%Y-%m")
 accidents$week <- strftime(accidents$date, format = "%Y-%U")
@@ -96,22 +85,6 @@ print(monthly_accidents)
 weekly_accidents <- aggregate(list(accidents = accidents$date), by = list(week = accidents$week), length)
 print(weekly_accidents)
 
-=======
-# Remplacement des longitudes de la ville de Paris
-accidents$longitude <- ifelse(accidents$ville %in% names(longitudes_paris), longitudes_paris[accidents$ville], accidents$longitude)
-# Remplacement des latitudes de la ville de Paris
-accidents$latitude <- ifelse(accidents$ville %in% names(latitudes_paris), latitudes_paris[accidents$ville], accidents$latitude)
-
-# Remplacement des longitudes des villes de Marseille
-accidents$longitude <- ifelse(accidents$ville %in% names(longitudes_marseille), longitudes_marseille[accidents$ville], accidents$longitude)
-# Remplacement des latitudes des villes de Marseille
-accidents$latitude <- ifelse(accidents$ville %in% names(latitudes_marseille), latitudes_marseille[accidents$ville], accidents$latitude)
-
-# Remplacement des longitudes des villes de Lyon
-accidents$longitude <- ifelse(accidents$ville %in% names(longitudes_lyon), longitudes_lyon[accidents$ville], accidents$longitude)
-# Remplacement des latitudes des villes de Lyon
-accidents$latitude <- ifelse(accidents$ville %in% names(latitudes_lyon), latitudes_lyon[accidents$ville], accidents$latitude)
->>>>>>> 399d66b7f2335f19e396c403a66ea22cf285b2a9
 
 
 # Calculer le nombre d'accidents par conditions atmosphériques
@@ -148,10 +121,7 @@ barplot(severity_accidents$count, names.arg = severity_accidents$severity,
 
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 399d66b7f2335f19e396c403a66ea22cf285b2a9
 # Extraire l'heure de la colonne date
 accidents$hour <- as.numeric(format(accidents$date, "%H"))+1
 
@@ -180,7 +150,6 @@ barplot(top_100_cities$count, names.arg = top_100_cities$city,
         main = "Nombre d'accidents par ville", las = 2, cex.names = 0.8)
 
 
-<<<<<<< HEAD
 
 
 
@@ -217,29 +186,51 @@ barplot(monthly_accidents$count, names.arg = c("Janvier", "Février", "Mars", "A
 
 
 # Load the necessary libraries
-library(leaflet)
+library(maps)
 
-# Extract the department number from the id_code_insee column
-accidents$department <- substr(accidents$id_code_insee, 1, 2)
+# Create a function to extract the department code from the id_code_insee column
+extract_department <- function(x) {
+  # Convert the id_code_insee value to a character string
+  x <- as.character(x)
+  
+  # Check if the department code is "2A" or "2B"
+  if (substr(x, 1, 2) %in% c("2A", "2B")) {
+    # Return the department code
+    return(substr(x, 1, 2))
+  } else {
+    # Return all but the last three characters of the id_code_insee value
+    return(substr(x, 1, nchar(x) - 3))
+  }
+}
+
+# Extract the department code from the id_code_insee column
+accidents$department <- sapply(accidents$id_code_insee, extract_department)
+
+# Read in the department mapping file
+department_map <- read.csv("link_region_dep.csv", stringsAsFactors = FALSE)
+
+# Create a named vector to map department codes to names
+department_map <- setNames(department_map$nom_departement, department_map$code_departement)
+
+# Update the department column with the department names
+accidents$department <- department_map[accidents$department]
 
 # Count the number of accidents by department
 accidents_by_department <- aggregate(list(accidents = accidents$date), by = list(department = accidents$department), length)
 
-# Create a color palette for the number of accidents
-colors <- colorFactor(palette = "Reds", domain = accidents_by_department$accidents)
+# Create a map of France
+france_map <- map("france", fill = TRUE, col = "transparent", plot = FALSE)
 
-# Create a leaflet map
-leaflet() %>%
-  addTiles() %>%
-  addCircles(data = accidents_by_department, lat = ~latitude, lng = ~longitude,
-             color = ~colors(accidents), radius = 5000,
-             label = ~paste(department, accidents))
+# Match the departments in the data with those in the map
+match_index <- match(accidents_by_department$department, france_map$names)
+
+# Create a color palette for the number of accidents with more visible reds
+colors <- colorRampPalette(c("lightblue", "blue"))(length(unique(accidents_by_department$accidents)))
+
+# Assign colors to each department based on the number of accidents
+department_colors <- colors[as.numeric(cut(accidents_by_department$accidents, breaks = length(colors)))]
+
+# Plot the map with colored departments
+map(france_map, fill = TRUE, col = department_colors[match_index])
 
 
-#leaflet
-#fichier final : ajout numéro dep, reg,
-#rapport, pres en pdf, code R, CSV
-
-
-=======
->>>>>>> 399d66b7f2335f19e396c403a66ea22cf285b2a9
