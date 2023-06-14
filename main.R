@@ -4,12 +4,6 @@ accidents <- read.csv('stat_acc_V3.csv', sep = ";", header = TRUE)
 
 accidents$date <- as.POSIXct(accidents$date, format = "%Y-%m-%d %H:%M")
 
-=======
-accidents$date <- as.POSIXct(accidents$date, format = "%Y-%m-%d %H:%M")
-
-#transforme les données char en int
->>>>>>> 399d66b7f2335f19e396c403a66ea22cf285b2a9
-
 #traitements données id_code_insee
 accidents$id_code_insee = as.integer(accidents$id_code_insee)
 #remplace les NA par la moyenne
