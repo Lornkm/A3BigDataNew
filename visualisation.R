@@ -106,29 +106,38 @@ barplot(monthly_accidents$count, names.arg = c("Janvier", "Février", "Mars", "A
 
 
 # CONSTRUIRE UN JEU DE DONNEES AVEC LE NOMBRE D'ACCIDENTS SELON LA GRAVITE POUR 100.000 HABITANTS PAR REGION
+# Nom du jeu de données final : dataframe_grav_reg_centmille
 
-
+# Création d'un dataframe 0 de 4 lignes et 17 colonnes
 dataframe_grav_reg <- data.frame(matrix(0, nrow = 4, ncol = length(habitants_regions$CODREG)))
 
 for(i in 1:length(accidents$id_code_insee_trunc)){
   
+  # Sauvegarde de la valeur de gravite et du code de département du fichier de données
   gravite = accidents$descr_grav[i]
   code_dep = accidents$id_code_insee_trunc[i]
   
+  # Si la valeur vaut NA alors cela correspond à la Corse
   if(is.na(code_dep) == TRUE){
     code_dep=as.character("2A")
   }
+  # Si la valeur vaut 97, récupérer l'id_code_insee initial pour garder les 3 premiers chiffres
   if(code_dep == 97){
     code_dep = as.integer((accidents$id_code_insee[i])/100)
   }
   
   for(j in 1:length(link$code_departement)){
     code_dep_link = link$code_departement[j]
+    # Si les codes de département sont identiques alors
     if(code_dep == code_dep_link){
+      # Récupérer l'indice du département
       indice_link = which(link$code_departement == code_dep_link)
+      # Avec l'indice récupérer la région qui correspond au département
       corresp_reg = link$code_region[indice_link]
+      # Récupérer l'indice de la région dans le fichier habitants_regions
       indice_reg = which(habitants_regions$CODREG == corresp_reg)
-    
+      
+      # Ajouter 1 à la région et à la gravité qui correspond
       dataframe_grav_reg[[indice_reg]][as.integer(gravite)] = dataframe_grav_reg[[indice_reg]][as.integer(gravite)] +1
       
     }
@@ -136,5 +145,19 @@ for(i in 1:length(accidents$id_code_insee_trunc)){
 }
 
 print(dataframe_grav_reg)
+
+# Création d'un nouveau dataframe pour 100.000 habitants par région
+dataframe_grav_reg_centmille <- data.frame(matrix(0, nrow = 4, ncol = length(habitants_regions$CODREG)))
+
+for(i in 1:ncol(dataframe_grav_reg)){
+  for(j in 1:nrow(dataframe_grav_reg)){
+    # Pour chaque cellule, convertir pour 100.000 habitants par région
+    dataframe_grav_reg_centmille[[i]][j] = as.integer((((dataframe_grav_reg[[i]][j])*100000)/habitants_regions$PTOT[i]))
+  }
+}
+
+
+
+
 
 
