@@ -1,8 +1,14 @@
 accidents <- read.csv('stat_acc_V3.csv', sep = ";", header = TRUE)
 
+<<<<<<< HEAD
 
 accidents$date <- as.POSIXct(accidents$date, format = "%Y-%m-%d %H:%M")
 
+=======
+accidents$date <- as.POSIXct(accidents$date, format = "%Y-%m-%d %H:%M")
+
+#transforme les données char en int
+>>>>>>> 399d66b7f2335f19e396c403a66ea22cf285b2a9
 
 #traitements données id_code_insee
 accidents$id_code_insee = as.integer(accidents$id_code_insee)
@@ -35,10 +41,12 @@ accidents$place = as.integer(accidents$place)
 #variables multimodales en nombres
 print(unique(accidents$descr_grav))
 # Obtenir les niveaux uniques de la variable
-levels <- unique(accidents$descr_grav)  # Obtient les niveaux uniques de la variable
+levels <- unique(accidents$descr_grav) 
 for (i in 1:length(levels)) {
   accidents$descr_grav[accidents$descr_grav == levels[i]] <- i
 }
+accidents$descr_grav <- as.numeric(accidents$descr_grav)
+
 print(unique(accidents$descr_grav))
 # Obtenir les niveaux uniques de la variable
 levels <- unique(accidents$descr_cat_veh)
@@ -46,6 +54,8 @@ print(unique(accidents$descr_cat_veh))
 for (i in 1:length(levels)) {
   accidents$descr_cat_veh[accidents$descr_cat_veh == levels[i]] <- i
 }
+accidents$descr_cat_veh <- as.numeric(accidents$descr_cat_veh)
+
 print(unique(accidents$descr_cat_veh))
 
 
@@ -73,6 +83,7 @@ accidents$age <- accidents$age - 14
 print(accidents$age[1:20])
 
 
+<<<<<<< HEAD
 # Create a new column for month and week
 accidents$month <- format(accidents$date, "%Y-%m")
 accidents$week <- strftime(accidents$date, format = "%Y-%U")
@@ -85,6 +96,22 @@ print(monthly_accidents)
 weekly_accidents <- aggregate(list(accidents = accidents$date), by = list(week = accidents$week), length)
 print(weekly_accidents)
 
+=======
+# Remplacement des longitudes de la ville de Paris
+accidents$longitude <- ifelse(accidents$ville %in% names(longitudes_paris), longitudes_paris[accidents$ville], accidents$longitude)
+# Remplacement des latitudes de la ville de Paris
+accidents$latitude <- ifelse(accidents$ville %in% names(latitudes_paris), latitudes_paris[accidents$ville], accidents$latitude)
+
+# Remplacement des longitudes des villes de Marseille
+accidents$longitude <- ifelse(accidents$ville %in% names(longitudes_marseille), longitudes_marseille[accidents$ville], accidents$longitude)
+# Remplacement des latitudes des villes de Marseille
+accidents$latitude <- ifelse(accidents$ville %in% names(latitudes_marseille), latitudes_marseille[accidents$ville], accidents$latitude)
+
+# Remplacement des longitudes des villes de Lyon
+accidents$longitude <- ifelse(accidents$ville %in% names(longitudes_lyon), longitudes_lyon[accidents$ville], accidents$longitude)
+# Remplacement des latitudes des villes de Lyon
+accidents$latitude <- ifelse(accidents$ville %in% names(latitudes_lyon), latitudes_lyon[accidents$ville], accidents$latitude)
+>>>>>>> 399d66b7f2335f19e396c403a66ea22cf285b2a9
 
 
 # Calculer le nombre d'accidents par conditions atmosphériques
@@ -121,7 +148,10 @@ barplot(severity_accidents$count, names.arg = severity_accidents$severity,
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 399d66b7f2335f19e396c403a66ea22cf285b2a9
 # Extraire l'heure de la colonne date
 accidents$hour <- as.numeric(format(accidents$date, "%H"))+1
 
@@ -150,6 +180,7 @@ barplot(top_100_cities$count, names.arg = top_100_cities$city,
         main = "Nombre d'accidents par ville", las = 2, cex.names = 0.8)
 
 
+<<<<<<< HEAD
 
 
 
@@ -210,3 +241,5 @@ leaflet() %>%
 #rapport, pres en pdf, code R, CSV
 
 
+=======
+>>>>>>> 399d66b7f2335f19e396c403a66ea22cf285b2a9
