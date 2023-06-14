@@ -1,6 +1,8 @@
 accidents <- read.csv('stat_acc_V3.csv', sep = ";", header = TRUE)
 
-#transforme les données char en int
+
+accidents$date <- as.POSIXct(accidents$date, format = "%Y-%m-%d %H:%M")
+
 
 #traitements données id_code_insee
 accidents$id_code_insee = as.integer(accidents$id_code_insee)
@@ -71,6 +73,20 @@ accidents$age <- accidents$age - 14
 print(accidents$age[1:20])
 
 
+# Create a new column for month and week
+accidents$month <- format(accidents$date, "%Y-%m")
+accidents$week <- strftime(accidents$date, format = "%Y-%U")
+
+# Count the number of accidents per month
+monthly_accidents <- aggregate(list(accidents = accidents$date), by = list(month = accidents$month), length)
+print(monthly_accidents)
+
+# Count the number of accidents per week
+weekly_accidents <- aggregate(list(accidents = accidents$date), by = list(week = accidents$week), length)
+print(weekly_accidents)
+
+
+
 # Calculer le nombre d'accidents par conditions atmosphériques
 atmospheric_accidents <- aggregate(list(count = accidents$Num_Acc), by = list(atmospheric = accidents$descr_athmo), FUN = length)
 
@@ -91,14 +107,17 @@ barplot(surface_accidents$count, names.arg = surface_accidents$surface,
 
 
 
-# Calculer le nombre d'accidents par gravité
-severity_accidents <- aggregate(list(count = accidents$Num_Acc), by = list(severity = accidents$descr_grav), FUN = length)
+# Create a factor variable for severity with labels
+accidents$severity <- factor(accidents$descr_grav, levels = c(1, 2, 3, 4),
+                             labels = c("Indemne", "Tué", "Blessé hospitalisé", "Blessé léger"))
 
-# Créer un graphique à barres pour les accidents par gravité
+# Calculate the number of accidents by severity
+severity_accidents <- aggregate(list(count = accidents$Num_Acc), by = list(severity = accidents$severity), FUN = length)
+
+# Create a bar chart for accidents by severity
 barplot(severity_accidents$count, names.arg = severity_accidents$severity,
         xlab = "Gravité", ylab = "Nombre d'accidents",
         main = "Nombre d'accidents selon la gravité")
-
 
 
 
@@ -129,3 +148,65 @@ top_100_cities <- head(city_accidents, 100)
 barplot(top_100_cities$count, names.arg = top_100_cities$city,
         xlab = "Code postal", ylab = "Nombre d'accidents",
         main = "Nombre d'accidents par ville", las = 2, cex.names = 0.8)
+
+
+
+
+
+# Define the age groups
+age_groups <- c("0-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+")
+
+# Create a new column for the age group
+accidents$age_group <- cut(accidents$age, breaks = c(0, 17, 24, 34, 44, 54, 64, Inf), labels = age_groups, right = TRUE)
+
+# Create a histogram of the number of accidents by age group
+hist(as.numeric(accidents$age_group), breaks = seq(0.5, length(age_groups) + 0.5),
+     xaxt = "n", xlab = "Tranche d'âge", ylab = "Nombre d'accidents",
+     main = "Nombre d'accidents par tranche d'âge")
+
+# Add custom labels to the x-axis
+axis(1, at = seq_along(age_groups), labels = age_groups)
+
+
+
+# Extract the month from the date column
+accidents$month <- format(accidents$date, "%m")
+
+# Calculate the number of accidents by month
+monthly_accidents <- aggregate(list(count = accidents$Num_Acc), by = list(month = accidents$month), FUN = length)
+
+# Order the data by month
+monthly_accidents <- monthly_accidents[order(monthly_accidents$month),]
+
+# Create a barplot of the number of accidents by month
+barplot(monthly_accidents$count, names.arg = c("Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"),
+        xlab = "Mois", ylab = "Nombre d'accidents",
+        main = "Nombre d'accidents par mois", las = 1, cex.names=0.6)
+
+
+
+# Load the necessary libraries
+library(leaflet)
+
+# Extract the department number from the id_code_insee column
+accidents$department <- substr(accidents$id_code_insee, 1, 2)
+
+# Count the number of accidents by department
+accidents_by_department <- aggregate(list(accidents = accidents$date), by = list(department = accidents$department), length)
+
+# Create a color palette for the number of accidents
+colors <- colorFactor(palette = "Reds", domain = accidents_by_department$accidents)
+
+# Create a leaflet map
+leaflet() %>%
+  addTiles() %>%
+  addCircles(data = accidents_by_department, lat = ~latitude, lng = ~longitude,
+             color = ~colors(accidents), radius = 5000,
+             label = ~paste(department, accidents))
+
+
+#leaflet
+#fichier final : ajout numéro dep, reg,
+#rapport, pres en pdf, code R, CSV
+
+
