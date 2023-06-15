@@ -31,10 +31,8 @@ tableau_croise_place_grav <- table(accidents_sans_zero$descr_grav, accidents_san
 print(tableau_croise)
 # Effectuer un test du khi-deux
 result_khi2_place_grav <- chisq.test(tableau_croise)
-
 # Afficher les résultats du test du khi-deux
 print(result_khi2_place_grav)
-
 # Représentation en mosaïque
 mosaicplot(tableau_croise_place_grav, las = 1, main = "Tableau croisé : Gravité vs Place utilisée")
 
