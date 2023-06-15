@@ -64,7 +64,8 @@ accidents$longitude <- ifelse(accidents$ville %in% names(longitudes_lyon), longi
 accidents$latitude <- ifelse(accidents$ville %in% names(latitudes_lyon), latitudes_lyon[accidents$ville], accidents$latitude)
 
 
-
+print(unique(accidents$descr_cat_veh))
+print(unique(accidents$descr_grav))
 # Variables multimodales en nombres
 
 
@@ -84,6 +85,14 @@ for (i in 1:length(levels)) {
 }
 accidents$descr_cat_veh <- as.numeric(accidents$descr_cat_veh)
 
+
+#Obtenir les niveaux uniques de la variable
+#levels <- unique(accidents$descr_dispo_secu)
+#print(unique(accidents$descr_dispo_secu))
+#for (i in 1:length(levels)) {
+#  accidents$descr_dispo_secu[accidents$descr_dispo_secu == levels[i]] <- i
+#}
+#accidents$descr_dispo_secu <- as.numeric(accidents$descr_dispo_secu)
 
 
 
