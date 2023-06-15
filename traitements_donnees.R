@@ -70,6 +70,7 @@ accidents$latitude <- ifelse(accidents$ville %in% names(latitudes_lyon), latitud
 
 # Obtenir les niveaux uniques de la variable
 levels <- unique(accidents$descr_grav) 
+print(unique(accidents$descr_grav))
 # Parcourir tout les niveaux et attribuer un chiffre différent à chaque niveau
 for (i in 1:length(levels)) {
   accidents$descr_grav[accidents$descr_grav == levels[i]] <- i
@@ -96,6 +97,7 @@ for (i in 1:length(levels)) {
   accidents$descr_dispo_secu[accidents$descr_dispo_secu == levels[i]] <- i
 }
 accidents$descr_dispo_secu <- as.integer(accidents$descr_dispo_secu)
+
 
 
 

@@ -21,21 +21,23 @@ print(result_khi2_age_grav)
 
 mosaicplot(tableau_croise_age_grav)
 
+
 # Créer un sous-ensemble de données en excluant les lignes où place = 0
 accidents_sans_zero <- accidents[accidents$place != 0, ]
 # Les lignes où place = 0 sont encore présentes dans le dataframe original "accidents"
 
-# Tableau croisé entre la gravité (grav) et la place utilisée (place)
-tableau_croise <- table(accidents_sans_zero$descr_grav, accidents_sans_zero$place)
+# Tableau croisé entre la gravité et la place utilisée
+tableau_croise_place_grav <- table(accidents_sans_zero$descr_grav, accidents_sans_zero$place)
 print(tableau_croise)
 # Effectuer un test du khi-deux
-test_khi_deux <- chisq.test(tableau_croise)
+result_khi2_place_grav <- chisq.test(tableau_croise)
 
 # Afficher les résultats du test du khi-deux
-print(test_khi_deux)
+print(result_khi2_place_grav)
 
 # Représentation en mosaïque
-mosaicplot(tableau_croise, las = 1, main = "Tableau croisé : Gravité vs Place utilisée")
+mosaicplot(tableau_croise_place_grav, las = 1, main = "Tableau croisé : Gravité vs Place utilisée")
+
 
 
 #tableau croisé entre gravité et dispositif de sécurité
@@ -44,6 +46,7 @@ print(tableau_croise_secu_grav)
 result_khi2_secu_grav <- chisq.test(tableau_croise_secu_grav)
 print(result_khi2_secu_grav)
 mosaicplot(tableau_croise_secu_grav, las=1, main = "Mosaïque entre la gravité et le dispositif de sécurité")
+
 
 
 #tableau croisé entre gravité et la description de la catégorie du véhicule
