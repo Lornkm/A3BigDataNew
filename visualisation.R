@@ -300,6 +300,8 @@ library(leaflet)
 library(maps)
 library(dplyr)
 
+head(accidents)
+
 france_map <- map("france", fill = TRUE, col = "transparent", plot = FALSE)
 
 # Extract department code from id_code_insee column
@@ -433,6 +435,12 @@ leaflet() %>%
             title = "Part d'accidents graves",
             colors = colors,
             labels = c("<15%", "15-20%", "20-25%", "25-27.5%", ">27.5%"))
+
+
+
+
+
+
 
 
 
