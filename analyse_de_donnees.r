@@ -38,8 +38,13 @@ print(result_chi2_catveh_grav)
 mosaicplot(tableau_croise_catveh_grav, las = 1, main = "Mosaïque entre la gravité et la catégorie du véhicule")
 
 
+# Calculer la corrélation de Pearson
+correlation_catveh_grav <- cor(accidents$descr_grav, accidents$descr_cat_veh, method = "pearson")
+# Afficher le résultat
+print(correlation)
 
-
+correlation_secu_grav <- cor(accidents$descr_grav, accidents$descr_dispo_secu, method = "pearson")
+print(correlation)
 
 
 # REGRESSIONS LINEAIRES

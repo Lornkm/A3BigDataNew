@@ -64,35 +64,38 @@ accidents$longitude <- ifelse(accidents$ville %in% names(longitudes_lyon), longi
 accidents$latitude <- ifelse(accidents$ville %in% names(latitudes_lyon), latitudes_lyon[accidents$ville], accidents$latitude)
 
 
-print(unique(accidents$descr_cat_veh))
-print(unique(accidents$descr_grav))
+
 # Variables multimodales en nombres
 
 
 # Obtenir les niveaux uniques de la variable
 levels <- unique(accidents$descr_grav) 
+# Parcourir tout les niveaux et attribuer un chiffre différent à chaque niveau
 for (i in 1:length(levels)) {
   accidents$descr_grav[accidents$descr_grav == levels[i]] <- i
 }
 accidents$descr_grav <- as.numeric(accidents$descr_grav)
 
 
+
 # Obtenir les niveaux uniques de la variable
 levels <- unique(accidents$descr_cat_veh)
 print(unique(accidents$descr_cat_veh))
+# Parcourir tout les niveaux et attribuer un chiffre différent à chaque niveau
 for (i in 1:length(levels)) {
   accidents$descr_cat_veh[accidents$descr_cat_veh == levels[i]] <- i
 }
 accidents$descr_cat_veh <- as.numeric(accidents$descr_cat_veh)
 
 
-#Obtenir les niveaux uniques de la variable
-#levels <- unique(accidents$descr_dispo_secu)
-#print(unique(accidents$descr_dispo_secu))
-#for (i in 1:length(levels)) {
-#  accidents$descr_dispo_secu[accidents$descr_dispo_secu == levels[i]] <- i
-#}
-#accidents$descr_dispo_secu <- as.numeric(accidents$descr_dispo_secu)
+# Obtenir les niveaux uniques de la variable
+levels <- unique(accidents$descr_dispo_secu)
+print(unique(accidents$descr_dispo_secu))
+# Parcourir tout les niveaux et attribuer un chiffre différent à chaque niveau
+for (i in 1:length(levels)) {
+  accidents$descr_dispo_secu[accidents$descr_dispo_secu == levels[i]] <- i
+}
+accidents$descr_dispo_secu <- as.numeric(accidents$descr_dispo_secu)
 
 
 
