@@ -74,7 +74,7 @@ levels <- unique(accidents$descr_grav)
 for (i in 1:length(levels)) {
   accidents$descr_grav[accidents$descr_grav == levels[i]] <- i
 }
-accidents$descr_grav <- as.numeric(accidents$descr_grav)
+accidents$descr_grav <- as.integer(accidents$descr_grav)
 
 
 
@@ -85,7 +85,7 @@ print(unique(accidents$descr_cat_veh))
 for (i in 1:length(levels)) {
   accidents$descr_cat_veh[accidents$descr_cat_veh == levels[i]] <- i
 }
-accidents$descr_cat_veh <- as.numeric(accidents$descr_cat_veh)
+accidents$descr_cat_veh <- as.integer(accidents$descr_cat_veh)
 
 
 # Obtenir les niveaux uniques de la variable
@@ -95,7 +95,7 @@ print(unique(accidents$descr_dispo_secu))
 for (i in 1:length(levels)) {
   accidents$descr_dispo_secu[accidents$descr_dispo_secu == levels[i]] <- i
 }
-accidents$descr_dispo_secu <- as.numeric(accidents$descr_dispo_secu)
+accidents$descr_dispo_secu <- as.integer(accidents$descr_dispo_secu)
 
 
 
