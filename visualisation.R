@@ -244,6 +244,8 @@ accidents_by_region <- accidents %>%
   group_by(region) %>%
   summarise(nombre_accidents = n())
 
+  accidents_by_region
+
 accidents_by_dep <- accidents %>%
   group_by(department) %>%
   summarise(region = first(region)) %>%
@@ -320,7 +322,7 @@ unique(accidents$descr_grav)
 accidents_by_department <- accidents %>%
   group_by(department) %>%
   summarise(nombre_accidents = n(),
-            nombre_accidents_graves = sum(descr_grav %in% c("2", "4")),
+            nombre_accidents_graves = sum(descr_grav %in% c("2", "3")),
             part_accidents_graves = nombre_accidents_graves / nombre_accidents)
 print(accidents_by_department, n=1000)
 
@@ -385,13 +387,15 @@ accidents$region <- region_map[accidents$department]
 accidents_by_region <- accidents %>%
   group_by(region) %>%
   summarise(nombre_accidents = n(),
-            nombre_accidents_graves = sum(descr_grav %in% c("2", "4")),
+            nombre_accidents_graves = sum(descr_grav %in% c("2", "3")),
             part_accidents_graves = nombre_accidents_graves / nombre_accidents)
 
 accidents_by_dep <- accidents %>%
   group_by(department) %>%
   summarise(region = first(region)) %>%
   left_join(accidents_by_region, by = "region")
+
+print(accidents_by_region)
 
 # Ajouter une colonne des noms des départements dans le tableau accidents_by_dep
 department_map <- read.csv("link_region_dep.csv", stringsAsFactors = FALSE)
@@ -404,7 +408,7 @@ colors <- c("green", "yellow", "orange", "orangered", "red")
 # Assigner des couleurs à chaque région en fonction du nombre d'accidents
 region_colors <- accidents_by_dep %>%
   mutate(color = cut(part_accidents_graves,
-                     breaks = c(-Inf, 0.3, 0.35, 0.4, 0.45, Inf),
+                     breaks = c(-Inf, 0.15, 0.20, 0.25, 0.275, Inf),
                      labels = colors))
 
 region_colors$department_name <- iconv(region_colors$department_name, to = "ASCII//TRANSLIT")
@@ -428,7 +432,10 @@ leaflet() %>%
   addLegend(position = "bottomright",
             title = "Part d'accidents graves",
             colors = colors,
-            labels = c("<30%", "30-35%", "35-40%", "40-45%", ">45%"))
+            labels = c("<15%", "15-20%", "20-25%", "25-27.5%", ">27.5%"))
+
+
+
 
 
 
