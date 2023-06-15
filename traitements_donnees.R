@@ -8,7 +8,9 @@ source('arrondissement_PARIS_LYON_MARSEILLE.R')
 # Mettre les valeurs sous format adéquat
 
 # Traitements données id_code_insee
-accidents$id_code_insee = as.integer(accidents$id_code_insee)
+accidents$id_code_insee[i] = as.integer(accidents$id_code_insee[i])
+
+# accidents$id_code_insee = as.integer(accidents$id_code_insee)
 
 # Traitements données age
 accidents$age = as.integer(accidents$age)

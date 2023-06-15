@@ -50,7 +50,7 @@ summary(modele_accident_semaine)
 # F value de 58 597 : le modèle est statistiquement significatif
 anova(modele_accident_semaine)
 plot(modele_accident_semaine)
-
+cor.test(x = week_year, y = weekly_accidents_reglin, method = "pearson")
 
 # Régression linéaire entre les accidents et les mois
 month_year <- seq(1, 12)
@@ -60,4 +60,4 @@ modele_accident_mois <- lm(monthly_accidents_reglin ~ month_year)
 summary(modele_accident_mois)
 # F value de 10 714 : le modèle est statistiquement significatif
 anova(modele_accident_mois)
-
+plot(modele_accident_mois)

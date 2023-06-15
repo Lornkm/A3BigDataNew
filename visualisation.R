@@ -4,11 +4,9 @@ source('traitements_donnees.R')
 
 # Compter le nombre d'accidents par mois
 monthly_accidents <- aggregate(list(accidents = accidents$date), by = list(month = accidents$month), length)
-print(monthly_accidents)
 
 # Compter le nombre d'accidents par semaine
 weekly_accidents <- aggregate(list(accidents = accidents$date), by = list(week = accidents$week), length)
-print(weekly_accidents)
 
 
 
@@ -117,13 +115,15 @@ for(i in 1:length(accidents$id_code_insee_trunc)){
   gravite = accidents$descr_grav[i]
   code_dep = accidents$id_code_insee_trunc[i]
   
+  
   # Si la valeur vaut NA alors cela correspond à la Corse
   if(is.na(code_dep) == TRUE){
     code_dep=as.character("2A")
   }
   # Si la valeur vaut 97, récupérer l'id_code_insee initial pour garder les 3 premiers chiffres
   if(code_dep == 97){
-    code_dep = as.integer((accidents$id_code_insee[i])/100)
+    print(accidents$id_code_insee[i])
+    code_dep = as.integer(as.integer(accidents$id_code_insee[i])/100)
   }
   
   for(j in 1:length(link$code_departement)){
@@ -139,12 +139,10 @@ for(i in 1:length(accidents$id_code_insee_trunc)){
       
       # Ajouter 1 à la région et à la gravité qui correspond
       dataframe_grav_reg[[indice_reg]][as.integer(gravite)] = dataframe_grav_reg[[indice_reg]][as.integer(gravite)] +1
-      
     }
   }
 }
 
-print(dataframe_grav_reg)
 
 # Création d'un nouveau dataframe pour 100.000 habitants par région
 dataframe_grav_reg_centmille <- data.frame(matrix(0, nrow = 4, ncol = length(habitants_regions$CODREG)))
@@ -156,6 +154,73 @@ for(i in 1:ncol(dataframe_grav_reg)){
   }
 }
 
+
+install.packages(c("leaflet", "dplyr"))
+library(leaflet)
+library(maps)
+library(dplyr)
+
+france_map <- map("france", fill = TRUE, col = "transparent", plot = FALSE)
+
+# Extraire le code du département de la colonne id_code_insee
+accidents$department <- substr(accidents$id_code_insee, 1, nchar(accidents$id_code_insee) - 3)
+
+# Lire le fichier de mappage des départements
+department_map <- read.csv("Cours/Big Data/A3BigDataNew/link_region_dep.csv", stringsAsFactors = FALSE)
+
+# Créer un vecteur nommé pour mapper les codes des départements aux noms
+department_map <- setNames(department_map$nom_departement, department_map$code_departement)
+
+# Mettre à jour la colonne department avec les noms des départements
+accidents$department <- department_map[accidents$department]
+
+# Compter le nombre d'accidents par département
+accidents_by_department <- accidents %>%
+  group_by(department) %>%
+  summarise(nombre_accidents = n())
+  
+accidents_by_department[nrow(accidents_by_department) + 1,] <- list("Ain",NA)
+accidents_by_department[nrow(accidents_by_department) + 1,] <- list("Aisne",NA)
+accidents_by_department[nrow(accidents_by_department) + 1,] <- list("Allier",NA)
+accidents_by_department[nrow(accidents_by_department) + 1,] <- list("Alpes-de-Haute-Provence",NA)
+accidents_by_department[nrow(accidents_by_department) + 1,] <- list("Hautes-Alpes",NA)
+accidents_by_department[nrow(accidents_by_department) + 1,] <- list("Alpes-Maritimes",NA)
+accidents_by_department[nrow(accidents_by_department) + 1,] <- list("Ardèche",NA)
+accidents_by_department[nrow(accidents_by_department) + 1,] <- list("Ardennes",NA)
+accidents_by_department[nrow(accidents_by_department) + 1,] <- list("Ariège",NA)
+
+accidents_by_department$nombre_accidents[is.na(accidents_by_department$nombre_accidents)] = 0
+accidents_by_department<-accidents_by_department[order(accidents_by_department$department),]
+
+print(accidents_by_department)
+
+# Créer une palette de couleurs personnalisée pour le nombre d'accidents
+colors <- c("orange", "red", "green", "blue", "purple", "black")
+
+# Assigner des couleurs à chaque département en fonction du nombre d'accidents
+department_colors <- accidents_by_department %>%
+  mutate(color = cut(nombre_accidents,
+                     breaks = c(-Inf, 500, 1000, 1500, 2000, 2500, Inf),
+                     labels = colors))
+
+
+pal<-colorBin(colors,accidents_by_department$nombre_accidents,c(-Inf, 500, 1000, 1500, 2000, 2500, Inf))
+
+
+print(department_colors)
+
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = france_map,
+              fillColor = ~pal(accidents_by_department$nombre_accidents),
+              fillOpacity = 0.7,
+              color = "white",
+              weight = 1, 
+              label = ~department_colors$department) %>%
+  addLegend(position = "bottomright",
+            title = "Nombre d'accidents",
+            colors = colors,
+            labels = c("<500", "500-1000", "1000-1500", "1500-2000", "2000-2500", ">2500"))
 
 
 
