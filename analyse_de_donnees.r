@@ -3,11 +3,12 @@ source('visualisation.R')
 
 #TEST DU KI2
 
-# Définir les limites des groupes d'âge
-limits <- c(0, 20, 40, 60, 80, 100, Inf)
+# Définir les groupes par tranche d'age
+age_groups <- c("0-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+")
 
-# Appliquer la découpe et créer une nouvelle variable "age_group" regroupant les âges
-accidents$age_group <- cut(accidents$age, breaks = limits, labels = c("0-20", "20-40", "40-60", "60-80", "80-100", "100+"), right = FALSE)
+# Créer une nouvelle colonne pour les ages
+accidents$age_group <- cut(accidents$age, breaks = c(0, 17, 24, 34, 44, 54, 64, Inf), labels = age_groups, right = TRUE)
+
 # Afficher les premières lignes pour vérification
 print(accidents$age_group[1:20])
 
@@ -20,23 +21,25 @@ print(result_chi2)
 
 mosaicplot(tableau_croise)
 
-# Définir les limites des groupes d'âge
-limits <- c(0, 20, 40, 60, 80, 100, Inf)
 
-# Appliquer la découpe et créer une nouvelle variable "age_group" regroupant les âges
-accidents$age_group <- cut(accidents$age, breaks = limits, labels = c("0-20", "20-40", "40-60", "60-80", "80-100", "100+"), right = FALSE)
-# Afficher les premières lignes pour vérification
-print(accidents$age_group[1:20])
+#tableau croisé entre gravité et dispositif de sécurité
+tableau_croise_secu_grav <- table(accidents$descr_grav, accidents$descr_dispo_secu)
+print(tableau_croise_secu_grav)
+result_chi2_2 <- chisq.test(tableau_croise_secu_grav)
+print(result_chi2_2)
+mosaicplot(tableau_croise_secu_grav, las=1, main = "Mosaïque entre la gravité et le dispositif de sécurité")
 
-# Test du chi2 sur descr_grav
-tableau_croise <- table(accidents$descr_grav, accidents$age_group)
-print(tableau_croise)
-result_chi2 <- chisq.test(tableau_croise)
-# Afficher les résultats du test
-print(result_chi2)
-mosaicplot(tableau_croise)
 
-mosaicplot(tableau_croise)
+#tableau croisé entre gravité et la description de la catégorie du véhicule
+tableau_croise_catveh_grav <- table(accidents$descr_grav, accidents$descr_cat_veh)
+print(tableau_croise_catveh_grav)
+result_chi2_3 <- chisq.test(tableau_croise_catveh_grav)
+print(result_chi2_3)
+mosaicplot(tableau_croise_catveh_grav, las = 1, main = "Mosaïque entre la gravité et la catégorie du véhicule")
+
+
+
+
 
 
 # REGRESSIONS LINEAIRES
