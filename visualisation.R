@@ -332,6 +332,7 @@ department_colors <- accidents_by_department %>%
   mutate(color = cut(part_accidents_graves,
                      breaks = c(-Inf, 0.1, 0.2, 0.3, 0.4, 0.5, Inf),
                      labels = colors))
+department_colors
 
 department_colors$department <- iconv(department_colors$department, to = "ASCII//TRANSLIT")
 department_colors$department <- gsub("'", "", department_colors$department)
@@ -358,9 +359,76 @@ leaflet() %>%
 
 
 
+################################################################################################
 
 
+# Installer et charger les packages nécessaires
+library(maps)
+library(leaflet)
+library(dplyr)
 
+france_map <- map("france", fill = TRUE, col = "transparent", plot = FALSE)
+
+# Extraire le code du département de la colonne id_code_insee
+accidents$department <- substr(accidents$id_code_insee, 1, nchar(accidents$id_code_insee) - 3)
+
+# Lire le fichier de mappage des régions
+region_map <- read.csv("link_region_dep.csv", stringsAsFactors = FALSE)
+
+# Créer un vecteur nommé pour mapper les codes des départements aux noms des régions
+region_map <- setNames(region_map$nom_region, region_map$code_departement)
+
+# Mettre à jour la colonne department avec les noms des régions
+accidents$region <- region_map[accidents$department]
+
+# Compter le nombre d'accidents par région
+accidents_by_region <- accidents %>%
+  group_by(region) %>%
+  summarise(nombre_accidents = n(),
+            nombre_accidents_graves = sum(descr_grav %in% c("2", "4")),
+            part_accidents_graves = nombre_accidents_graves / nombre_accidents)
+
+accidents_by_dep <- accidents %>%
+  group_by(department) %>%
+  summarise(region = first(region)) %>%
+  left_join(accidents_by_region, by = "region")
+
+# Ajouter une colonne des noms des départements dans le tableau accidents_by_dep
+department_map <- read.csv("link_region_dep.csv", stringsAsFactors = FALSE)
+department_map <- setNames(department_map$nom_departement, department_map$code_departement)
+
+accidents_by_dep$department_name <- department_map[accidents_by_dep$department]
+
+colors <- c("green", "yellow", "orange", "orangered", "red")
+
+# Assigner des couleurs à chaque région en fonction du nombre d'accidents
+region_colors <- accidents_by_dep %>%
+  mutate(color = cut(part_accidents_graves,
+                     breaks = c(-Inf, 0.3, 0.35, 0.4, 0.45, Inf),
+                     labels = colors))
+
+region_colors$department_name <- iconv(region_colors$department_name, to = "ASCII//TRANSLIT")
+region_colors$department_name <- gsub("'", "", region_colors$department_name)
+region_colors$department_name <- tolower(region_colors$department_name)
+
+france_map$names <- iconv(france_map$names, to = "ASCII//TRANSLIT")
+france_map$names <- gsub("'", "", france_map$names)
+france_map$names <- tolower(france_map$names)
+
+region_colors$label <- paste(region_colors$region, "(", region_colors$department_name, ")", round(region_colors$part_accidents_graves * 100), "%", sep = " ")
+
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = france_map,
+              fillColor = region_colors$color[match(france_map$names, region_colors$department_name)],
+              fillOpacity = 0.7,
+              label = ~region_colors$label[match(france_map$names, region_colors$department_name)],
+              color = "white",
+              weight = 1) %>%
+  addLegend(position = "bottomright",
+            title = "Part d'accidents graves",
+            colors = colors,
+            labels = c("<30%", "30-35%", "35-40%", "40-45%", ">45%"))
 
 
 
