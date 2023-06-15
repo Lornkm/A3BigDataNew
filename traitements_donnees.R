@@ -97,7 +97,7 @@ for (i in 1:length(levels)) {
   accidents$descr_dispo_secu[accidents$descr_dispo_secu == levels[i]] <- i
 }
 accidents$descr_dispo_secu <- as.integer(accidents$descr_dispo_secu)
-
+print(accidents$descr_dispo_secu)
 
 
 
