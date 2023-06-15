@@ -292,6 +292,76 @@ leaflet() %>%
 
 
 
+################################################################################################
+
+library(leaflet)
+library(maps)
+library(dplyr)
+
+france_map <- map("france", fill = TRUE, col = "transparent", plot = FALSE)
+
+# Extract department code from id_code_insee column
+accidents$department <- substr(accidents$id_code_insee, 1, nchar(accidents$id_code_insee) - 3)
+
+# Read department mapping file
+department_map <- read.csv("link_region_dep.csv", stringsAsFactors = FALSE)
+
+# Create named vector to map department codes to names
+department_map <- setNames(department_map$nom_departement, department_map$code_departement)
+
+# Update department column with department names
+accidents$department <- department_map[accidents$department]
+
+unique(accidents$descr_grav)
+
+
+
+# Count number of accidents by department
+accidents_by_department <- accidents %>%
+  group_by(department) %>%
+  summarise(nombre_accidents = n(),
+            nombre_accidents_graves = sum(descr_grav %in% c("2", "4")),
+            part_accidents_graves = nombre_accidents_graves / nombre_accidents)
+print(accidents_by_department, n=1000)
+
+# Create custom color palette for proportion of severe accidents
+colors <- c("green", "yellowgreen", "yellow", "orange", "orangered", "red")
+
+# Assign colors to each department based on proportion of severe accidents
+department_colors <- accidents_by_department %>%
+  mutate(color = cut(part_accidents_graves,
+                     breaks = c(-Inf, 0.1, 0.2, 0.3, 0.4, 0.5, Inf),
+                     labels = colors))
+
+department_colors$department <- iconv(department_colors$department, to = "ASCII//TRANSLIT")
+department_colors$department <- gsub("'", "", department_colors$department)
+department_colors$department <- tolower(department_colors$department)
+
+france_map$names <- iconv(france_map$names, to = "ASCII//TRANSLIT")
+france_map$names <- gsub("'", "", france_map$names)
+france_map$names <- tolower(france_map$names)
+
+department_colors$label <- paste(department_colors$department, round(department_colors$part_accidents_graves * 100), "%", sep = " : ")
+
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = france_map,
+              fillColor = department_colors$color[match(france_map$names, department_colors$department)],
+              fillOpacity = 0.7,
+              label = ~paste(france_map$names, round(department_colors$part_accidents_graves[match(france_map$names, department_colors$department)] * 100), "%", sep = " : "),
+              color = "white",
+              weight = 1) %>%
+  addLegend(position = "bottomright",
+            title = "Part d'accidents graves",
+            colors = colors,
+            labels = c("<10%", "10-20%", "20-30%", "30-40%", "40-50%", ">50%"))
+
+
+
+
+
+
+
 
 
 
